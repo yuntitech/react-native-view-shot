@@ -8,15 +8,16 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.net.Uri;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringDef;
 import android.util.Base64;
 import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -389,7 +390,12 @@ public class ViewShot implements UIBlock {
         } else {
             final Bitmap.CompressFormat cf = Formats.mapping[this.format];
 
-            bitmap.compress(cf, (int) (100.0 * quality), os);
+            Bitmap newBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+            newBitmap.eraseColor(Color.WHITE);
+            Canvas canvas = new Canvas(newBitmap);
+            canvas.drawBitmap(bitmap, 0, 0, null);
+            newBitmap.compress(cf, (int) (100.0 * quality), os);
+            newBitmap.recycle();
         }
 
         recycleBitmap(bitmap);
